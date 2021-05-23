@@ -1,6 +1,7 @@
 (ns postie.core
   (:require [clojure.string :as string]
-            [malli.generator :as g]))
+            [malli.generator :as g]
+            [postie.geographies.ca :as ca]))
 
 ; COUNTRIES_WITHOUT_POSTCODES = Set[
 ;                                   "AO", # Angola
@@ -290,118 +291,106 @@
 ;     string if string =~ /^[0-9]{6}$/
 ;   end
 
-(def postcode-patterns
-  {:at :ch
-   :au #"^[0-9]{4}$"
-   :be :ch
-   :ca {:fsa #"[A-CEGHJK-NPR-TVXY][0-9][A-CEGHJK-NPR-TV-Z]"
-        :lsa #"[0-9][A-CEGHJK-NPR-TV-Z][0-9]"
-        :complete #"^[A-CEGHJK-NPR-TVXY][0-9][A-CEGHJK-NPR-TV-Z] [0-9][A-CEGHJK-NPR-TV-Z][0-9]$"}
-   :ch #"^[1-9][0-9]{3}$"
-   :de #"^([0]{1}[1-9]{1}|[1-9]{1}[0-9]{1})[0-9]{3}$"
-   :dk :ch
-   :fr :de
-   :gb {:out-code #"^[A-Z]{1,2}([1-9][0-9A-HJKMNPR-Y]?|0[A-HJKMNPR-Y]?)$"
-        :incode #"^[0-9][A-HJLNP-Z]{2}$"
-        :complete #"^[A-Z]{1,2}([1-9][0-9A-HJKMNPR-Y]?|0[A-HJKMNPR-Y]?) [0-9][A-HJLNP-Z]{2}$"}
-   :lu :ch
-   :nl #"^[1-9][0-9]{3} (S[BCE-RT-Z]|[A-RT-Z][A-Z])$"
-   :no #"^[0-9]{4}$"
-   :nz :au
-   :pl #"^(\d\d)[^\w]*(\d\d\d)$"
-   :ro #"^[0-9]{6}$"
-   :se #"/^[1-9]{1}[0-9]{4}$/"
-   :us #"^[0-9]{5}"
-   :za :au})
-
-
-
-(defn preprocess [postcode]
-  (-> postcode
-      clojure.string/trim
-      clojure.string/trim-newline
-      clojure.string/upper-case
-      (clojure.string/replace #"\n|\s|\r" "")))
-
-(defn preprocess-ca [postcode]
-  (let [thing (clojure.string/upper-case postcode)]
-    [(subs thing 0 3) (subs thing 3)]))
-
-(defn valid-ca-postcode?
-  ([postcode]
-   (->> postcode
-        preprocess
-        preprocess-ca
-        (apply valid-ca-postcode?)))
-  ([fsa* lsa*]
-   (let [{:keys [lsa fsa]} (:ca postcode-patterns)]
-     (some? (and (re-matches lsa lsa*)
-                 (re-matches fsa fsa*))))))
-
 (defn valid-ch-postcode? [postcode]
   [true [postcode]])
 
+(defn format-ch-postcode [postcode]
+  postcode)
+
 (defn valid-au-postcode? [])
+(defn format-au-postcode [])
 
 (defn valid-de-postcode? [])
+(defn format-de-postcode [])
 
 (defn valid-gb-postcode? [])
+(defn format-gb-postcode [])
 
 (defn valid-nl-postcode? [])
+(defn format-nl-postcode [])
 
 (defn valid-no-postcode? [])
+(defn format-no-postcode [])
 
 (defn valid-pl-postcode? [])
+(defn format-pl-postcode [])
 
 (defn valid-ro-postcode? [])
+(defn format-ro-postcode [])
 
 (defn valid-se-postcode? [])
+(defn format-se-postcode [])
 
-(defn valid-us-postode? [])
+(defn valid-us-postcode? [])
+(defn format-us-postcode [])
 
-(def validators
-  {:at valid-ch-postcode?
-   :au valid-au-postcode?
-   :be valid-ch-postcode?
-   :ca valid-ca-postcode?
-   :ch valid-ch-postcode?
-   :de valid-de-postcode?
-   :dk valid-ch-postcode?
-   :fr valid-de-postcode?
-   :gb valid-gb-postcode?
-   :lu valid-ch-postcode?
-   :nl valid-nl-postcode?
-   :no valid-no-postcode?
-   :nz valid-au-postcode?
-   :pl valid-pl-postcode?
-   :ro valid-ro-postcode?
-   :se valid-se-postcode?
-   :us valid-us-postode?
-   :za valid-au-postcode?})
+(def country-codes-to-behaviour
+  {:at {:validator valid-ch-postcode?
+        :formatter format-ch-postcode
+        :generator nil}
+   :au {:validator valid-au-postcode?
+        :formatter format-au-postcode
+        :generator nil}
+   :be {:validator valid-ch-postcode?
+        :formatter format-ch-postcode
+        :generator nil}
+   :ca {:validator ca/valid?
+        :formatter ca/format-postcode
+        :generator ca/generator}
+   :ch {:validator valid-ch-postcode?
+        :formatter format-ch-postcode
+        :generator nil}
+   :de {:validator valid-de-postcode?
+        :formatter format-de-postcode
+        :generator nil}
+   :dk {:validator valid-ch-postcode?
+        :formatter format-ch-postcode
+        :generator nil}
+   :fr {:validator valid-de-postcode?
+        :formatter format-de-postcode
+        :generator nil}
+   :gb {:validator valid-gb-postcode?
+        :formatter format-gb-postcode
+        :generator nil}
+   :lu {:validator valid-ch-postcode?
+        :formatter format-ch-postcode
+        :generator nil}
+   :nl {:validator valid-nl-postcode?
+        :formatter format-nl-postcode
+        :generator nil}
+   :no {:validator valid-no-postcode?
+        :formatter format-no-postcode
+        :generator nil}
+   :nz {:validator valid-au-postcode?
+        :formatter format-au-postcode
+        :generator nil}
+   :pl {:validator valid-pl-postcode?
+        :formatter format-pl-postcode
+        :generator nil}
+   :ro {:validator valid-ro-postcode?
+        :formatter format-ro-postcode
+        :generator nil}
+   :se {:validator valid-se-postcode?
+        :formatter format-se-postcode
+        :generator nil}
+   :us {:validator valid-us-postcode?
+        :formatter format-us-postcode
+        :generator nil}
+   :za {:validator valid-au-postcode?
+        :formatter format-au-postcode
+        :generator nil}})
 
-(defn format-ca-postcode [postcode]
-  (let [[fsa lsa] (-> postcode preprocess preprocess-ca)
-        valid? (valid-ca-postcode? fsa lsa)]
-    (when valid?
-      (clojure.string/join " "
-                           [fsa lsa]))))
+(defn validate [country-code postcode]
+  (when-let [{validator :validator} (get country-codes-to-behaviour country-code)]
+    (validator postcode)))
 
-(defn gen-ca-postcode []
-  (g/generate [:re (get-in postcode-patterns [:ca :complete])]))
-
-(defn validate [country-code postcode] ((get validators country-code) postcode))
-
-(defn format-postcode [country-code postcode])
-
-(comment
-  (validate :ca "H3C 0R2")
-  (valid-ca-postcode? "H3C 0R2")
-  (format-ca-postcode "h3c 0r2"))
+(defn format-postcode [country-code postcode]
+  (if-let [{formatter :formatter} (get country-codes-to-behaviour country-code)]
+    (formatter postcode)
+    true))
 
 (defn valid?
-  "I don't do a whole lot."
   [country-code postcode]
-  (let [validator (case country-code
-                    :au nil
-                    :ca valid-ca-postcode?)]
-    (validator postcode)))
+  (if-let [{validator :validator} (get country-codes-to-behaviour country-code)]
+    (validator postcode)
+    true))
