@@ -1,7 +1,5 @@
 (ns postie.core
-  (:require [clojure.string :as string]
-            [malli.generator :as g]
-            [postie.geographies.au :as au]
+  (:require [postie.geographies.au :as au]
             [postie.geographies.ca :as ca]))
 
 (defn valid-ch-postcode? [postcode]
@@ -259,6 +257,9 @@
         :formatter format-au-postcode
         :generator nil}
    :zm {}})
+
+(defn has-postcodes? [countries country-code]
+  (contains? countries country-code))
 
 (defn validate [country-code postcode]
   (when-let [{validator :validator} (get country-codes-to-behaviour country-code)]

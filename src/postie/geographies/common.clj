@@ -1,4 +1,5 @@
-(ns postie.geographies.common)
+(ns postie.geographies.common
+  (:require [clojure.string :as string]))
 
 (def postcode-patterns
   {:at :ch
@@ -26,7 +27,7 @@
 
 (defn preprocess [postcode]
   (-> postcode
-      clojure.string/trim
-      clojure.string/trim-newline
-      (clojure.string/replace #"\n|\s|\r" "")))
+      string/trim
+      string/trim-newline
+      (string/replace #"\n|\s|\r" "")))
 
