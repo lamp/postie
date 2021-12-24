@@ -3,11 +3,7 @@
 
 (def postcode-patterns
   {:at :ch
-   :au #"^[0-9]{4}$"
    :be :ch
-   :ca {:fsa #"[A-CEGHJK-NPR-TVXY][0-9][A-CEGHJK-NPR-TV-Z]"
-        :lsa #"[0-9][A-CEGHJK-NPR-TV-Z][0-9]"
-        :complete #"^[A-CEGHJK-NPR-TVXY][0-9][A-CEGHJK-NPR-TV-Z] [0-9][A-CEGHJK-NPR-TV-Z][0-9]$"}
    :ch #"^[1-9][0-9]{3}$"
    :de #"^([0]{1}[1-9]{1}|[1-9]{1}[0-9]{1})[0-9]{3}$"
    :dk :ch

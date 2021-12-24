@@ -1,13 +1,14 @@
 (ns postie.geographies.au
   (:require [malli.generator :as g]
-            [clojure.string :as string]
-            [postie.geographies.common :refer [preprocess postcode-patterns]]))
+            [postie.geographies.common :refer [preprocess]]))
+
+(def pattern #"^[0-9]{4}$")
 
 (defn valid?
   [postcode]
   (->> postcode
        preprocess
-       (re-matches (:au postcode-patterns))
+       (re-matches pattern)
        some?))
 
 (defn format-postcode [postcode]
@@ -17,5 +18,5 @@
       false)))
 
 (def generator
-  (g/generator [:re (get postcode-patterns :au)]))
+  (g/generator [:re pattern]))
 

@@ -17,6 +17,6 @@
   (testing "returns false for invalid postcodes"
     (is (false? (sut/format-postcode "200a")))))
 
-( deftest generator-test
+(deftest generator-test
   (testing "it generates a valid postcode"
     (is (sut/valid? (g/generate sut/generator)))))
