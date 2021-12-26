@@ -28,3 +28,8 @@
       (string/replace #"\n|\s|\r" "")))
 
 
+(defn default-formatter [valid? postcode]
+  (let [sanitised-postcode (preprocess postcode)]
+      (if (valid? sanitised-postcode)
+        sanitised-postcode
+        false)))

@@ -1,6 +1,6 @@
 (ns postie.geographies.au
   (:require [malli.generator :as g]
-            [postie.geographies.common :refer [preprocess]]))
+            [postie.geographies.common :refer [preprocess default-formatter]]))
 
 (def pattern #"^[0-9]{4}$")
 
@@ -11,11 +11,7 @@
        (re-matches pattern)
        some?))
 
-(defn format-postcode [postcode]
-  (let [sanitised-postcode (preprocess postcode)]
-    (if (valid? sanitised-postcode)
-      sanitised-postcode
-      false)))
+(def format-postcode (partial default-formatter valid?))
 
 (def generator
   (g/generator [:re pattern]))
