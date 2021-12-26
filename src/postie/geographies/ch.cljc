@@ -18,3 +18,9 @@
 
 (def generator
   (g/generator [:re pattern]))
+
+(def strategy
+  {:generator generator
+   :formatter format-postcode
+   :valid? valid?})
+

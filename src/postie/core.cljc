@@ -1,15 +1,7 @@
 (ns postie.core
   (:require [postie.geographies.au :as au]
-            [postie.geographies.ca :as ca]))
-
-(defn valid-ch-postcode? [postcode]
-  [true [postcode]])
-
-(defn format-ch-postcode [postcode]
-  postcode)
-
-(defn valid-au-postcode? [])
-(defn format-au-postcode [])
+            [postie.geographies.ca :as ca]
+            [postie.geographies.ch :as ch]))
 
 (defn valid-de-postcode? [])
 (defn format-de-postcode [])
@@ -44,19 +36,10 @@
    :am {}
    :aq {}
    :ar {}
-   :at {:validator valid-ch-postcode?
-        :formatter format-ch-postcode
-        :generator nil}
-   :au {:validator au/valid?
-        :formatter au/format-postcode
-        :generator au/generator}
    :ax {}
    :az {}
    :bb {}
    :bd {}
-   :be {:validator valid-ch-postcode?
-        :formatter format-ch-postcode
-        :generator nil}
    :bg {}
    :bh {}
    :bl {}
@@ -65,13 +48,7 @@
    :br {}
    :bt {}
    :by {}
-   :ca {:validator ca/valid?
-        :formatter ca/format-postcode
-        :generator ca/generator}
    :cc {}
-   :ch {:validator valid-ch-postcode?
-        :formatter format-ch-postcode
-        :generator nil}
    :cl {}
    :cn {}
    :co {}
@@ -83,9 +60,6 @@
    :cz {}
    :de {:validator valid-de-postcode?
         :formatter format-de-postcode
-        :generator nil}
-   :dk {:validator valid-ch-postcode?
-        :formatter format-ch-postcode
         :generator nil}
    :do {}
    :dz {}
@@ -150,9 +124,6 @@
    :lr {}
    :ls {}
    :lt {}
-   :lu {:validator valid-ch-postcode?
-        :formatter format-ch-postcode
-        :generator nil}
    :lv {}
    :ma {}
    :mc {}
@@ -185,9 +156,6 @@
         :formatter format-no-postcode
         :generator nil}
    :np {}
-   :nz {:validator valid-au-postcode?
-        :formatter format-au-postcode
-        :generator nil}
    :om {}
    :pa {}
    :pe {}
@@ -253,25 +221,28 @@
    :ws {}
    :xk {}
    :yt {}
-   :za {:validator valid-au-postcode?
-        :formatter format-au-postcode
-        :generator nil}
    :zm {}})
 
-(defn has-postcodes? [countries country-code]
-  (contains? countries country-code))
+(defn fetch-strategy [country-code]
+  (condp some [country-code]
+    #{:au :nz  :za} au/strategy
+    #{:ca} ca/strategy
+    #{:ch :at :be :dk :lu} ch/strategy))
+
+(defn has-postcodes? [country-code]
+  (not (false? (fetch-strategy country-code))))
 
 (defn validate [country-code postcode]
-  (when-let [{validator :validator} (get country-codes-to-behaviour country-code)]
+  (when-let [{validator :validator} (fetch-strategy country-code)]
     (validator postcode)))
 
 (defn format-postcode [country-code postcode]
-  (if-let [{formatter :formatter} (get country-codes-to-behaviour country-code)]
+  (if-let [{formatter :formatter} (fetch-strategy country-code)]
     (formatter postcode)
     true))
 
 (defn valid?
   [country-code postcode]
-  (if-let [{validator :validator} (get country-codes-to-behaviour country-code)]
+  (if-let [{validator :validator} (fetch-strategy country-code)]
     (validator postcode)
     true))

@@ -27,3 +27,4 @@
       string/trim-newline
       (string/replace #"\n|\s|\r" "")))
 
+

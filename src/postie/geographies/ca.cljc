@@ -31,3 +31,8 @@
 
 (def generator
   (g/generator [:re (get patterns :complete)]))
+
+(def strategy
+  {:generator generator
+   :formatter format-postcode
+   :valid? valid?})
